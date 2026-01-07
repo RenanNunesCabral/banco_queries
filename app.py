@@ -1,4 +1,5 @@
 
+# app.py
 import streamlit as st
 import streamlit.components.v1 as components
 from pathlib import Path
@@ -12,21 +13,16 @@ def read_text_safe(path: Path) -> str:
     except Exception:
         return ""
 
-
 def inject_assets(index_html: str, css: str, js: str) -> str:
-    """Insere <style> e <script> no HTML fornecido.
+    """
+    Insere <style> e <script> no HTML fornecido.
     - Se houver </head>, injeta o CSS antes.
     - Se houver </body>, injeta o JS antes.
-    - Se o arquivo for apenas um fragmento (sem <html>), empacota como documento completo.
+    - Se for fragmento (sem <html>), empacota como documento completo.
     """
-    # Normaliza entradas
     index_html = index_html or ""
-    css_block = f"<style>
-{css or ''}
-</style>"
-    js_block = f"<script>
-{js or ''}
-</script>"
+    css_block = "<style>\n" + (css or "") + "\n</style>"
+    js_block = "<script>\n" + (js or "") + "\n</script>"
 
     html = index_html
     lower = html.lower()
@@ -34,59 +30,49 @@ def inject_assets(index_html: str, css: str, js: str) -> str:
     has_head_close = "</head>" in lower
     has_body_close = "</body>" in lower
 
-    # Se for documento completo, injeta em head/body
     if has_html_tag:
         if has_head_close:
-            # Injeta CSS antes de </head>
-            html = html.replace("</head>", css_block + "
-</head>", 1)
+            html = html.replace("</head>", css_block + "\n</head>", 1)
         else:
-            # Se não tiver head, adiciona um
-            html = html.replace("<html", f"<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">{css_block}</head>", 1)
+            # adiciona <head> se não existir
+            html = html.replace(
+                "<html",
+                "<html><head><meta charset=\"UTF-8\">"
+                "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">"
+                + css_block +
+                "</head>",
+                1
+            )
         if has_body_close:
-            html = html.replace("</body>", js_block + "
-</body>", 1)
+            html = html.replace("</body>", js_block + "\n</body>", 1)
         else:
-            html = html + "
-" + js_block
+            html = html + "\n" + js_block
     else:
-        # Fragmento: embala como documento completo
+        # Fragmento: empacota como documento completo
         html = (
-            "<!DOCTYPE html>
-"
-            "<html lang="pt-BR">
-"
-            "<head>
-"
-            "  <meta charset="UTF-8">
-"
-            "  <meta name="viewport" content="width=device-width, initial-scale=1">
-"
-            f"  {css_block}
-"
-            "</head>
-"
-            "<body>
-"
-            f"{index_html}
-"
-            f"{js_block}
-"
-            "</body>
-"
-            "</html>
-"
+            "<!DOCTYPE html>\n"
+            "<html lang=\"pt-BR\">\n"
+            "<head>\n"
+            "  <meta charset=\"UTF-8\">\n"
+            "  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n"
+            + css_block + "\n"
+            "</head>\n"
+            "<body>\n"
+            + index_html + "\n"
+            + js_block + "\n"
+            "</body>\n"
+            "</html>\n"
         )
     return html
 
 # === Leitura dos arquivos locais ===
-base = Path('.')
-index_html = read_text_safe(base / 'index.html')
-css = read_text_safe(base / 'styles.css')
-js = read_text_safe(base / 'script.js')
+base = Path(".")
+index_html = read_text_safe(base / "index.html")
+css = read_text_safe(base / "styles.css")
+js = read_text_safe(base / "script.js")
 
 if not (index_html or css or js):
-    st.error("Arquivos não encontrados. Coloque index.html, styles.css e script.js na mesma pasta do app.py.")
+    st.error("Arquivos não encontrados. Coloque index.html, styles.css e script.js na mesma pasta do app_v2.py.")
 else:
     # Controles de UI para altura e rolagem
     st.sidebar.header("Configurações do iframe")
@@ -94,10 +80,9 @@ else:
     scrolling = st.sidebar.toggle("Habilitar rolagem", value=True)
 
     final_html = inject_assets(index_html, css, js)
-
     components.html(final_html, height=height, scrolling=scrolling)
 
-    # Opcional: oferecer download do HTML compilado em um arquivo único
+    # Download do HTML único (opcional)
     st.download_button(
         label="Baixar página compilada (HTML único)",
         data=final_html,
