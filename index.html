@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Repositório de Códigos SQL</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="app-header">
+    <h1>📚 Repositório de Códigos SQL</h1>
+    <div class="toolbar">
+      <button id="toggleTheme" class="btn">Tema: Claro/Escuro</button>
+      <button id="exportJson" class="btn">Exportar JSON</button>
+      <label class="btn file-label">
+        Importar JSON
+        <input type="file" id="importJson" accept="application/json" hidden />
+      </label>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="panel">
+      <h2>➕ Adicionar / Editar Código</h2>
+      <form id="snippetForm" class="grid">
+        <input type="hidden" id="snippetId" />
+        <div class="field">
+          <label for="title">Título *</label>
+          <input type="text" id="title" placeholder="Ex.: Resumo por categoria e período" required />
+        </div>
+        <div class="field">
+          <label for="category">Categoria</label>
+          <input type="text" id="category" placeholder="Ex.: Faturamento, Leitura, Cadastros" />
+        </div>
+        <div class="field">
+          <label for="tags">Tags (separadas por vírgula)</label>
+          <input type="text" id="tags" placeholder="ex.: resumo, período, categoria, pivot" />
+        </div>
+        <div class="field full">
+          <label for="description">Descrição</label>
+          <textarea id="description" rows="3" placeholder="Explique o que o SQL faz, parâmetros, observações..."></textarea>
+        </div>
+        <div class="field full">
+          <label for="code">Código SQL *</label>
+          <textarea id="code" rows="10" placeholder="Cole aqui o SQL formatado" required></textarea>
+        </div>
+        <div class="actions">
+          <button type="submit" class="btn primary">Salvar</button>
+          <button type="button" id="resetForm" class="btn">Limpar</button>
+          <button type="button" id="previewBtn" class="btn">Pré-visualizar</button>
+        </div>
+      </form>
+      <div id="preview" class="preview hidden">
+        <h3>Pré-visualização</h3>
+        <pre class="code-view"><code id="previewCode" class="code sql"></code></pre>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>🔎 Buscar & Filtrar</h2>
+      <div class="grid">
+        <div class="field full">
+          <label for="search">Busca</label>
+          <input type="text" id="search" placeholder="Procure por título, descrição, tags ou SQL" />
+        </div>
+        <div class="field">
+          <label for="filterCategory">Categoria</label>
+          <input type="text" id="filterCategory" placeholder="Ex.: Faturamento" />
+        </div>
+        <div class="field">
+          <label for="filterTag">Tag</label>
+          <input type="text" id="filterTag" placeholder="Ex.: pivot" />
+        </div>
+        <div class="actions">
+          <button id="clearFilters" class="btn">Limpar filtros</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>📄 Lista de Snippets (dropdown)</h2>
+      <ul id="snippetsList" class="snippets-list"></ul>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <small>Renan Nunes Cabral • Armazena no <strong>LocalStorage</strong> do navegador </small>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
